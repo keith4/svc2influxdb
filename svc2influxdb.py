@@ -242,13 +242,16 @@ if __name__ == '__main__':
         series += svc_volume.collect()
         del svc_volume
 
-    try:
-        client.create_database(configuration['database'])
-    except ConnectionError:
-        print('ERROR: Cannot access to the InfluxDB database')
-        sys.exit(1)
+#    try:
+#        client.create_database(configuration['database'])
+#    except ConnectionError:
+#        print('ERROR: Cannot access to the InfluxDB database')
+#        sys.exit(1)
 
     # All the series are inserted into the database at the end of the batch to be sure we have a consistent batch
     # with all the measurements en equipments.
     for serie in series:
-        client.write_points(database=configuration['database'], points=serie, time_precision='ms')
+        try:
+            client.write_points(database=configuration['database'], points=serie, time_precision='ms')
+        except:
+            print('ERROR: Cannot write metrics to "' + configuration['database'] + '" database.')
